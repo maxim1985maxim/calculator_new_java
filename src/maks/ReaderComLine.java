@@ -1,11 +1,11 @@
 package maks;
 
 import java.util.Scanner;
-public class ReaderComLine implements Reader{
-    @Override
-    public double readData() {
-        System.out.print("Ведите число: ");
+public class ReaderComLine implements maks.Reader {
+    public String readData() {
+        System.out.print("Ведите выражение: ");
         Scanner str1 = new Scanner(System.in);
-        return Double.parseDouble(str1.nextLine());
+        return str1.nextLine();
+
     }
 }
