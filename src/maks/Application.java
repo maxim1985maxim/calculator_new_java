@@ -3,69 +3,66 @@ package maks;
 import java.util.Scanner;
 
 public class Application {
+
+    // ENUM for connect user choice with the name of the war of reading
+    enum ChoiceUser {
+        consoleRead,
+        fileRead
+    }
+
     public String expression;
 
     // The dialog with user
-    public String dialogUser() {
+    public int dialogUser() {
         System.out.println("Make a choice:");
-        System.out.println("1 - read an expression from command line;");
-        System.out.println("2 - read an expression from file.");
+        System.out.println("0 - read an expression from command line;");
+        System.out.println("1 - read an expression from file.");
         Scanner inputData = new Scanner(System.in);
-        String choice = inputData.nextLine();
+        //String choice = inputData.nextLine();
+        int choice = Integer.parseInt(inputData.nextLine());
         return choice;
     }
 
-    // The realization of expression from user (or from file)
-    public String getAnExpression(String rezultOfChoice) {
-        switch (rezultOfChoice) {
-            case "1": {
-                expression = new maks.ReaderComLine().readData();
-                break;
-            }
-            case "2": {
-                expression = new maks.ReaderFromFile().readData();
-                break;
-            }
-//            default:
-//                break;
-        }
-        System.out.print(expression + "=");
-        return expression;
+    // Getting path to file reading
+    public static String getPathFile() {
+        System.out.println("Please, write path to File");
+        Scanner inputData = new Scanner(System.in);
+        String path = inputData.nextLine();
+        return path;
     }
 
-    // Convert string into double1 + operationMath + double2
-    public String[] parceMethod(String realExpression) {
-        String firstDouble = "";
-        String secondDouble = "";
-        String operationMath = "";
-        char[] rezult = realExpression.toCharArray();
-        int i = 0;
-        while ((rezult[i] != '+') && ((rezult[i] != '-')) && (rezult[i] != '*') && (rezult[i] != '/')) {
-            firstDouble = firstDouble + rezult[i];
-            i++;
+    // The realization of expression from user (or from file)
+    public String getExpression(int rezultOfChoice) {
+        if (rezultOfChoice == ChoiceUser.consoleRead.ordinal()) {
+            expression = new maks.ReaderComLine().readData();
+            return expression;
+        } else if (rezultOfChoice == ChoiceUser.fileRead.ordinal()) {
+            expression = new maks.ReaderFromFile().readData();
+            return expression;
+        } else {
+            System.out.println("You wrote invalid choice");
+            System.out.println("Please choose valid choice");
+            dialogUser();
+            return null;
         }
-        operationMath = operationMath + rezult[i];
-        for (int j = i + 1; j < rezult.length; j++) {
-            secondDouble = secondDouble + rezult[j];
-        }
-        String[] array = new String[3];
-        array[0] = firstDouble;
-        array[1] = operationMath;
-        array[2] = secondDouble;
-        return array;
     }
 
     // Find mathMethod and Calculate expression
-    public double expressionCalculate(String[] arr) {
+    public double expressionCalculate(maks.Expression expres) {
         double rezult = 0;
-        maks.Calculation temp2 = new maks.Calculation();
-        switch (arr[1]) {
+        maks.Expression objExpression = new maks.Expression();
+        objExpression.parceMethod(expression);
+        switch (objExpression.operationMath) {
             case "+": {
-                rezult = temp2.methodAdd(Double.parseDouble(arr[0]), Double.parseDouble(arr[2]));
+                rezult = maks.Calculation.Add(Double.parseDouble(objExpression.firstDouble), Double.parseDouble(objExpression.secondDouble));
                 break;
             }
             case "-": {
-                rezult = new maks.Calculation().methodSub(Double.parseDouble(arr[0]), Double.parseDouble(arr[2]));
+                rezult = maks.Calculation.Sub(Double.parseDouble(objExpression.firstDouble), Double.parseDouble(objExpression.secondDouble));
+                break;
+            }
+            case "*": {
+                rezult = maks.Calculation.Mult(Double.parseDouble(objExpression.firstDouble), Double.parseDouble(objExpression.secondDouble));
                 break;
             }
 //            default:
@@ -74,4 +71,12 @@ public class Application {
         return rezult;
     }
 
+    // The method for MAIN  !!!
+    public void run() {
+        Application varApplication = new Application();
+        maks.Expression varExpression = new maks.Expression();
+        varExpression.parceMethod(varApplication.getExpression(varApplication.dialogUser()));
+        varApplication.expressionCalculate(varExpression);
+        System.out.println(varApplication.expressionCalculate(varExpression));
+    }
 }

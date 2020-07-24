@@ -7,6 +7,5 @@ public class ReaderComLine implements maks.Reader {
         System.out.print("Ведите выражение: ");
         Scanner str1 = new Scanner(System.in);
         return str1.nextLine();
-
     }
 }
